@@ -1,5 +1,7 @@
 using CatalogServices.DAL.Interfaces;
+using CatalogServices.DTO;
 using CatalogServices.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ICategory, CategoryDAL>();
+// builder.Services.AddScoped<IProduct, ProductDAL>();
+builder.Services.AddScoped<ICategory, CategoryDapper>();
+builder.Services.AddScoped<IProduct, ProductDapper>();
 
 var app = builder.Build();
 
@@ -22,40 +27,58 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var products = new List<Product>
-{
-   new Product { ProductId = 1, Name ="Apple", Description= "Regular Apple", Price= 10101, CategoryID= 1, Quantity = 12},
-   new Product { ProductId = 2, Name ="Orange", Description= "Regular Orange", Price= 10103, CategoryID= 1, Quantity = 20},
-   new Product { ProductId = 3, Name ="Pear", Description= "Regular Pear", Price= 10102, CategoryID= 1, Quantity = 10},
-   new Product { ProductId = 4, Name ="Pineapple", Description= "Regular Pineapple", Price= 10102, CategoryID= 1, Quantity = 101},
-};
 
 app.MapGet("/api/categories/", (ICategory categoryDAL) =>
 {
+    List<CategoryDTO> categoriesDto = new List<CategoryDTO>();
     var categories = categoryDAL.GetAll();
-    return Results.Ok(categories);
+    foreach (var category in categories)
+    {
+
+        categoriesDto.Add(new CategoryDTO
+        {
+            CategoryName = category.CategoryName
+        });
+    }
+    return Results.Ok(categoriesDto);
 });
 app.MapGet("/api/category/{name}", (ICategory categoryDAL, string categoryName) =>
 {
+    List<CategoryDTO> categoriesDto = new List<CategoryDTO>();
     var categories = categoryDAL.GetByName(categoryName);
-    return Results.Ok(categories);
+    foreach (var category in categories)
+    {
+        categoriesDto.Add(new CategoryDTO
+        {
+            CategoryName = category.CategoryName
+        });
+    }
+    return Results.Ok(categoriesDto);
 });
 
 app.MapGet("/api/categories/{id}", (ICategory categoryDAL, int id) =>
 {
+    CategoryDTO categoryDto = new CategoryDTO();
     var category = categoryDAL.GetById(id);
     if (category == null)
     {
         return Results.NotFound();
     }
+    categoryDto.CategoryName = category.CategoryName;
     return Results.Ok(category);
 });
 
-app.MapPost("/api/categories", (ICategory categoryDAL, Category category) =>
+app.MapPost("/api/categories", (ICategory categoryDAL, CategoryCreateDto categoryCreateDto) =>
 {
     try
     {
+        Category category = new Category
+        {
+            CategoryName = categoryCreateDto.CategoryName
+        };
         categoryDAL.Insert(category);
+
+        //return 201 Created
         return Results.Created($"/api/categories/{category.CategoryID}", category);
     }
     catch (Exception ex)
@@ -63,10 +86,15 @@ app.MapPost("/api/categories", (ICategory categoryDAL, Category category) =>
         return Results.BadRequest(ex.Message);
     }
 });
-app.MapPut("/api/categories", (ICategory categoryDAL, Category category) =>
+app.MapPut("/api/categories", (ICategory categoryDAL, CategoryUpdateDto categoryUpdateDTO) =>
 {
     try
     {
+        var category = new Category
+        {
+            CategoryID = categoryUpdateDTO.CategoryID,
+            CategoryName = categoryUpdateDTO.CategoryName
+        };
         categoryDAL.Update(category);
         return Results.Ok();
     }
@@ -77,7 +105,7 @@ app.MapPut("/api/categories", (ICategory categoryDAL, Category category) =>
 });
 app.MapDelete("/api/categories/{id}", (ICategory categoryDAL, int id) =>
 {
-     try
+    try
     {
         categoryDAL.Delete(id);
         return Results.Ok();
@@ -88,9 +116,141 @@ app.MapDelete("/api/categories/{id}", (ICategory categoryDAL, int id) =>
     }
 });
 
-app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+app.MapGet("/api/products/", (IProduct productDAL) =>
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+    List<ProductDTO> productsDto = new List<ProductDTO>();
+    var products = productDAL.GetAll();
+    foreach (var product in products)
+    {
+        productsDto.Add(new ProductDTO
+        {
+            // Populate DTO properties based on Product properties
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Quantity = product.Quantity
+        });
+    }
+    return Results.Ok(productsDto);
+});
+
+app.MapGet("/api/products/category", (IProduct productDAL, string categoryName) =>
+{
+    try
+    {
+        List<ProductDTO> productsDto = new List<ProductDTO>();
+        var products = productDAL.GetByCategory(categoryName); // Call GetByCategory method with categoryName parameter
+        foreach (var product in products)
+        {
+            productsDto.Add(new ProductDTO
+            {
+                // Populate DTO properties based on Product properties
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Quantity = product.Quantity
+            });
+        }
+        return Results.Ok(productsDto);
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+});
+
+
+app.MapGet("/api/products/{id}", (IProduct productDAL, int id) =>
+{
+    try
+    {
+        var product = productDAL.GetById(id);
+        if (product == null)
+        {
+            return Results.NotFound();
+        }
+        
+        var productDTO = new ProductDTO
+        {
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Quantity = product.Quantity
+            // Add other properties as needed
+        };
+
+        return Results.Ok(productDTO);
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+});
+
+
+
+app.MapDelete("/api/products/{id}", (IProduct productDAL, int id) =>
+{
+    try
+    {
+        productDAL.Delete(id);
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+});
+app.MapPost("/api/products", (IProduct productDAL, ProductCreateDto productCreateDto) =>
+{
+    try
+    {
+        Product product = new Product
+        {
+            Name = productCreateDto.Name,
+            Description = productCreateDto.Description,
+            Price = productCreateDto.Price,
+            Quantity = productCreateDto.Quantity,
+            CategoryID = productCreateDto.CategoryID
+        };
+        
+        productDAL.Insert(product);
+
+        // Return 201 Created with the created product
+        return Results.Created($"/api/products/{product.ProductID}", product);
+    }
+    catch (Exception ex)
+    {
+        // Return 400 Bad Request if there's an error
+        return Results.BadRequest(ex.Message);
+    }
+});
+
+app.MapPut("/api/products", (IProduct productDAL, ProductUpdateDto productUpdateDto) =>
+{
+    try
+    {
+        var product = new Product
+        {
+            ProductID = productUpdateDto.ProductID,
+            Name = productUpdateDto.Name,
+            Description = productUpdateDto.Description,
+            Price = productUpdateDto.Price,
+            Quantity = productUpdateDto.Quantity,
+            CategoryID = productUpdateDto.CategoryID 
+        };
+        
+        productDAL.Update(product); // Call the Update method with the created Product object
+        
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+});
+
+
+
+app.Run();

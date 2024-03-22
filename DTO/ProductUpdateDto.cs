@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CatalogServices.Models
+namespace CatalogServices.DTO
 {
-    public class Product
+    public class ProductUpdateDto
     {
         public int ProductID { get; set; }
         public string? Name { get; set; }
