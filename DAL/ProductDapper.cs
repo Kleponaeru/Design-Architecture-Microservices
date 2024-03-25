@@ -42,7 +42,11 @@ namespace CatalogServices.DAL.Interfaces
         {
             using (SqlConnection conn = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"SELECT * FROM Products order by ProductID";
+                var strSql = @"
+            SELECT p.* 
+            FROM Products p
+            INNER JOIN Categories c ON p.CategoryID = c.CategoryID 
+            ORDER BY p.ProductID";
                 var product = conn.Query<Product>(strSql);
                 return product;
             }
@@ -63,6 +67,21 @@ namespace CatalogServices.DAL.Interfaces
                 return product;
             }
         }
+        public IEnumerable<Product> GetByCategoryId(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            {
+                var strSql = @"
+            SELECT p.*
+            FROM Products p
+            INNER JOIN Categories c ON p.CategoryID = c.CategoryID
+            WHERE c.CategoryID = @CategoryId";
+                var param = new { CategoryId = id };
+                var products = conn.Query<Product>(strSql, param);
+                return products;
+            }
+        }
+
 
 
         public IEnumerable<Product> GetByCategory(string name)
@@ -78,7 +97,6 @@ namespace CatalogServices.DAL.Interfaces
                 return products;
             }
         }
-
 
         public void Insert(Product obj)
         {

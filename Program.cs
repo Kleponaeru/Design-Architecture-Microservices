@@ -134,8 +134,63 @@ app.MapGet("/api/products/", (IProduct productDAL) =>
     }
     return Results.Ok(productsDto);
 });
+app.MapGet("/api/products/{productID}", (IProduct productDAL, int id) =>
+{
+    try
+    {
+        var product = productDAL.GetById(id);
+        if (product == null)
+        {
+            return Results.NotFound();
+        }
 
-app.MapGet("/api/products/category", (IProduct productDAL, string categoryName) =>
+        var productDTO = new ProductDTO
+        {
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Quantity = product.Quantity
+        };
+
+        return Results.Ok(productDTO);
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+});
+
+app.MapGet("/api/products/category/{categoryID}", (IProduct productDAL, int id) =>
+{
+    try
+    {
+        var products = productDAL.GetByCategoryId(id);
+        if (products == null || !products.Any())
+        {
+            return Results.NotFound();
+        }
+
+        var productDTOs = products.Select(product => new ProductDTO
+        {
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Quantity = product.Quantity
+            // Add other properties as needed
+        }).ToList();
+
+        return Results.Ok(productDTOs);
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+});
+
+
+
+
+app.MapGet("/api/products/category/name", (IProduct productDAL, string categoryName) =>
 {
     try
     {
@@ -159,35 +214,6 @@ app.MapGet("/api/products/category", (IProduct productDAL, string categoryName) 
         return Results.BadRequest(ex.Message);
     }
 });
-
-
-app.MapGet("/api/products/{id}", (IProduct productDAL, int id) =>
-{
-    try
-    {
-        var product = productDAL.GetById(id);
-        if (product == null)
-        {
-            return Results.NotFound();
-        }
-        
-        var productDTO = new ProductDTO
-        {
-            Name = product.Name,
-            Description = product.Description,
-            Price = product.Price,
-            Quantity = product.Quantity
-            // Add other properties as needed
-        };
-
-        return Results.Ok(productDTO);
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(ex.Message);
-    }
-});
-
 
 
 app.MapDelete("/api/products/{id}", (IProduct productDAL, int id) =>
@@ -214,7 +240,7 @@ app.MapPost("/api/products", (IProduct productDAL, ProductCreateDto productCreat
             Quantity = productCreateDto.Quantity,
             CategoryID = productCreateDto.CategoryID
         };
-        
+
         productDAL.Insert(product);
 
         // Return 201 Created with the created product
@@ -238,11 +264,11 @@ app.MapPut("/api/products", (IProduct productDAL, ProductUpdateDto productUpdate
             Description = productUpdateDto.Description,
             Price = productUpdateDto.Price,
             Quantity = productUpdateDto.Quantity,
-            CategoryID = productUpdateDto.CategoryID 
+            CategoryID = productUpdateDto.CategoryID
         };
-        
+
         productDAL.Update(product); // Call the Update method with the created Product object
-        
+
         return Results.Ok();
     }
     catch (Exception ex)

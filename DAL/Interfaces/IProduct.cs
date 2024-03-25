@@ -9,5 +9,6 @@ namespace CatalogServices.DAL.Interfaces
     public interface IProduct:ICrud<Product>
     {
         IEnumerable<Product> GetByCategory (string name);
+        IEnumerable<Product> GetByCategoryId (int id);
     }
 }
