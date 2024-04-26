@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "KRMHlNoO2hzLpJlHxtwk1gSQphaCJHvBkXN7C3CgZK1tuj0M5xCGqiHfT9LY3uQWDCpPevHP2VlaI1AwfwBJ0w==",
+  "dgSpecHash": "xUFtb8swOCu+fvoYFvM3wA8Plbh5wIb5KjHHrwC/MsH1vrnEsM3KwlAMreAXsPtRNHCijRWQRYqcDjZiYLZJNA==",
   "success": true,
-  "projectFilePath": "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj",
+  "projectFilePath": "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\Microservices 2024\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lenovo\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\lenovo\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",

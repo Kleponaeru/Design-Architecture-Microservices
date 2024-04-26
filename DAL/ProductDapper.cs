@@ -43,7 +43,7 @@ namespace CatalogServices.DAL.Interfaces
             using (SqlConnection conn = new SqlConnection(GetConnectionString()))
             {
                 var strSql = @"
-            SELECT p.* 
+            SELECT p.*, c.categoryName 
             FROM Products p
             INNER JOIN Categories c ON p.CategoryID = c.CategoryID 
             ORDER BY p.ProductID";
@@ -56,7 +56,8 @@ namespace CatalogServices.DAL.Interfaces
         {
             using (SqlConnection conn = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"SELECT * FROM Products
+                var strSql = @"SELECT p.*, c.categoryName FROM products p
+                INNER JOIN Categories c ON p.CategoryID = c.CategoryID
                        WHERE ProductID = @ProductID";
                 var param = new { ProductID = id };
                 var product = conn.QueryFirstOrDefault<Product>(strSql, param);
@@ -72,7 +73,7 @@ namespace CatalogServices.DAL.Interfaces
             using (SqlConnection conn = new SqlConnection(GetConnectionString()))
             {
                 var strSql = @"
-            SELECT p.*
+            SELECT p.*, c.categoryName 
             FROM Products p
             INNER JOIN Categories c ON p.CategoryID = c.CategoryID
             WHERE c.CategoryID = @CategoryId";
@@ -88,7 +89,7 @@ namespace CatalogServices.DAL.Interfaces
         {
             using (SqlConnection conn = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"SELECT p.*
+                var strSql = @"SELECT p.*, c.categoryName 
                FROM Products p
                INNER JOIN Categories c ON p.CategoryID = c.CategoryID
                WHERE c.CategoryName LIKE '%' + @CategoryName + '%'";

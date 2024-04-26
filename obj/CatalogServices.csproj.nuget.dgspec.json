@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj": {}
+    "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\Microservices 2024\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj": {}
   },
   "projects": {
-    "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj": {
+    "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\Microservices 2024\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj",
+        "projectUniqueName": "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\Microservices 2024\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj",
         "projectName": "CatalogServices",
-        "projectPath": "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj",
+        "projectPath": "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\Microservices 2024\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj",
         "packagesPath": "C:\\Users\\lenovo\\.nuget\\packages\\",
-        "outputPath": "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\MyBackendServices\\CatalogServices\\CatalogServices\\obj\\",
+        "outputPath": "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\Microservices 2024\\MyBackendServices\\CatalogServices\\CatalogServices\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\lenovo\\AppData\\Roaming\\NuGet\\NuGet.Config"

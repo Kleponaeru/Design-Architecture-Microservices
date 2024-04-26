@@ -129,7 +129,8 @@ app.MapGet("/api/products/", (IProduct productDAL) =>
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
-            Quantity = product.Quantity
+            Quantity = product.Quantity,
+            CategoryName = product.CategoryName
         });
     }
     return Results.Ok(productsDto);
@@ -149,7 +150,8 @@ app.MapGet("/api/products/{productID}", (IProduct productDAL, int id) =>
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
-            Quantity = product.Quantity
+            Quantity = product.Quantity,
+            CategoryName = product.CategoryName
         };
 
         return Results.Ok(productDTO);
@@ -175,7 +177,8 @@ app.MapGet("/api/products/category/{categoryID}", (IProduct productDAL, int id) 
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
-            Quantity = product.Quantity
+            Quantity = product.Quantity,
+            CategoryName = product.CategoryName
             // Add other properties as needed
         }).ToList();
 
@@ -204,7 +207,8 @@ app.MapGet("/api/products/category/name", (IProduct productDAL, string categoryN
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                Quantity = product.Quantity
+                Quantity = product.Quantity,
+                CategoryName = product.CategoryName
             });
         }
         return Results.Ok(productsDto);

@@ -2661,11 +2661,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "d:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj",
+      "projectUniqueName": "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\Microservices 2024\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj",
       "projectName": "CatalogServices",
-      "projectPath": "d:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj",
+      "projectPath": "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\Microservices 2024\\MyBackendServices\\CatalogServices\\CatalogServices\\CatalogServices.csproj",
       "packagesPath": "C:\\Users\\lenovo\\.nuget\\packages\\",
-      "outputPath": "d:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\MyBackendServices\\CatalogServices\\CatalogServices\\obj\\",
+      "outputPath": "D:\\KULIAH\\SEMESTER 6\\MICROSERVICES\\Microservices 2024\\MyBackendServices\\CatalogServices\\CatalogServices\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\lenovo\\AppData\\Roaming\\NuGet\\NuGet.Config"
