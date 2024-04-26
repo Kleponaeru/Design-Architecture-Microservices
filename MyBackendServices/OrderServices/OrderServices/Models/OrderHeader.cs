@@ -10,5 +10,6 @@ namespace OrderServices.Models
         public int OrderHeaderId { get; set; }
         public int CustomerId { get; set; }
         public DateTime OrderDate { get; set; }
+        public string? CustomerName { get; set; } = null!;
     }
 }
