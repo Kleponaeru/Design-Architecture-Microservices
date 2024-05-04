@@ -11,10 +11,16 @@ namespace OrderServices.DAL
 {
     public class OrderDetailDAL : IOrderDetail
     {
+       private readonly IConfiguration _configuration;
+        public OrderDetailDAL(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         private string GetConnectionString()
         {
 
-            return @"Data Source=.\SQLExpress;Initial Catalog=OrderDb;Integrated Security=true;";
+            // return @"Data Source=.\SQLExpress;Initial Catalog=OrderDb;Integrated Security=true;";
+            return _configuration?.GetConnectionString("DefaultConnection") ?? "DefaultConnectionString";
         }
         public void Delete(int id)
         {
@@ -76,11 +82,11 @@ namespace OrderServices.DAL
 
         }
 
-        public void Insert(OrderDetail obj)
+        public OrderDetail Insert(OrderDetail obj)
         {
-            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            using (var connection = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"INSERT INTO OrderDetails (OrderHeaderId, ProductId, Quantity, Price) VALUES (@OrderHeaderId, @ProductId, @Quantity, @Price)";
+                var strSql = @"INSERT INTO OrderDetails (OrderHeaderId, ProductId, Quantity, Price) VALUES (@OrderHeaderId, @ProductId, @Quantity, @Price); SELECT @@IDENTITY;";
                 var param = new
                 {
                     OrderDetailId = obj.OrderDetailId,
@@ -91,7 +97,9 @@ namespace OrderServices.DAL
                 };
                 try
                 {
-                    conn.Execute(strSql, param);
+                    var id = connection.ExecuteScalar<int>(strSql, param);
+                    obj.OrderDetailId = id;
+                    return obj;
                 }
                 catch (SqlException sqlEx)
                 {

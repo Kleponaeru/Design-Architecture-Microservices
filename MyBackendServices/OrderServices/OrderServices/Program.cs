@@ -2,6 +2,7 @@ using OrderServices.DAL;
 using OrderServices.DAL.Interfaces;
 using OrderServices.DTO;
 using OrderServices.Models;
+using OrderServices.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//register services
 builder.Services.AddScoped<ICustomer, CustomerDAL>();
 builder.Services.AddScoped<IOrderDetail, OrderDetailDAL>();
 builder.Services.AddScoped<IOrderHeader, OrderHeaderDAL>();
+
+//register product services
+builder.Services.AddHttpClient<IProductServices, ProductServices>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -63,10 +69,10 @@ app.MapPost("/api/customer", (ICustomer customerDAL, CustomerCreateDTO customerC
             CustomerName = customerCreateDTO.CustomerName,
         };
 
-        customerDAL.Insert(customer);
+        var cust = customerDAL.Insert(customer);
 
         // Return 201 Created with the created product
-        return Results.Created($"/api/customer/{customer.CustomerId}", customer);
+        return Results.Created($"/api/customer/{customer.CustomerId}", cust);
     }
     catch (Exception ex)
     {
@@ -81,6 +87,7 @@ app.MapPut("/api/customer", (ICustomer customerDAL, CustomerUpdateDTO customerUp
     {
         var customer = new Customer
         {
+            CustomerId = customerUpdateDTO.CustomerId,
             CustomerName = customerUpdateDTO.CustomerName,
         };
 
@@ -154,7 +161,7 @@ app.MapPost("/api/orderHeader", (IOrderHeader orderHeaderDAL, OrderHeaderCreateD
             OrderDate = orderHeaderCreateDTO.OrderDate
         };
 
-        orderHeaderDAL.Insert(orderHeader);
+        var order = orderHeaderDAL.Insert(orderHeader);
 
         var responseObject = new
         {
@@ -163,7 +170,7 @@ app.MapPost("/api/orderHeader", (IOrderHeader orderHeaderDAL, OrderHeaderCreateD
         };
 
         // Return 201 Created with the created product
-        return Results.Created($"/api/orderHeader/{orderHeader.CustomerId}", responseObject);
+        return Results.Created($"/api/orderHeader/{order.OrderHeaderId}", responseObject);
     }
     catch (Exception ex)
     {
@@ -249,10 +256,22 @@ app.MapGet("/api/orderDetails/{id}", (IOrderDetail orderDetailDAL, int id) =>
     return Results.Ok(orderHead);
 });
 
-app.MapPost("/api/orderDetails", (IOrderDetail orderDetailDAL, OrderDetailCreateDTO orderDetailCreateDTO) =>
+app.MapPost("/api/orderDetails", async (IOrderDetail orderDetailDAL, IProductServices productServices, OrderDetailCreateDTO orderDetailCreateDTO) =>
 {
     try
     {
+        var products = await productServices.GetProductById(orderDetailCreateDTO.ProductId);
+        if (products == null)
+        {
+            return Results.BadRequest("Product not found");
+        }
+        if (products.quantity < orderDetailCreateDTO.Quantity)
+        {
+            return Results.BadRequest("Stocks not enough");
+        }
+
+        orderDetailCreateDTO.Price = products.price;
+
         OrderDetail orderDetail = new OrderDetail
         {
 
@@ -262,7 +281,7 @@ app.MapPost("/api/orderDetails", (IOrderDetail orderDetailDAL, OrderDetailCreate
             Quantity = orderDetailCreateDTO.Quantity,
         };
 
-        orderDetailDAL.Insert(orderDetail);
+        var details = orderDetailDAL.Insert(orderDetail);
 
         var responseObject = new
         {
@@ -273,37 +292,50 @@ app.MapPost("/api/orderDetails", (IOrderDetail orderDetailDAL, OrderDetailCreate
         };
 
         // Return 201 Created with the created product
-        return Results.Created($"/api/orderDetails/{orderDetail.OrderDetailId}", responseObject);
+        return Results.Created($"/api/orderDetails/{details.OrderDetailId}", responseObject);
     }
     catch (Exception ex)
     {
         // Return 400 Bad Request if there's an error
-        return Results.BadRequest(ex.Message);
+        return Results.BadRequest(ex.Message + " " + ex.StackTrace + " " + ex.InnerException);
     }
 });
 
-app.MapPut("/api/orderDetails", (IOrderDetail orderDetailDAL, OrderDetailUpdateDTO orderDetailUpdateDTO) =>
+app.MapPut("/api/orderDetails", async (IOrderDetail orderDetailDAL, IProductServices productServices, OrderDetailUpdateDTO orderDetailUpdateDTO) =>
 {
     try
     {
+        var product = await productServices.GetProductById(orderDetailUpdateDTO.ProductId);
+        
+        if (product == null)
+        {
+            return Results.BadRequest("Product not found");
+        }
+        
+        if (product.quantity < orderDetailUpdateDTO.Quantity)
+        {
+            return Results.BadRequest("Insufficient stock");
+        }
+
         var orderDetail = new OrderDetail
         {
             OrderDetailId = orderDetailUpdateDTO.OrderDetailId,
             OrderHeaderId = orderDetailUpdateDTO.OrderHeaderId,
             ProductId = orderDetailUpdateDTO.ProductId,
-            Price = orderDetailUpdateDTO.Price,
+            Price = product.price,
             Quantity = orderDetailUpdateDTO.Quantity,
         };
 
-        orderDetailDAL.Update(orderDetail); // Call the Update method with the created Product object
-
+        orderDetailDAL.Update(orderDetail); // Update the order detail
+        
         return Results.Ok();
     }
     catch (Exception ex)
     {
-        return Results.BadRequest(ex.Message);
+        return Results.BadRequest("Failed to update order detail: " + ex.Message);
     }
 });
+
 
 app.MapDelete("/api/orderDetails/{id}", (IOrderDetail orderDetailDAL, int id) =>
 {

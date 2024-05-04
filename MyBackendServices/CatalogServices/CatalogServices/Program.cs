@@ -135,7 +135,7 @@ app.MapGet("/api/products/", (IProduct productDAL) =>
     }
     return Results.Ok(productsDto);
 });
-app.MapGet("/api/products/{productID}", (IProduct productDAL, int id) =>
+app.MapGet("/api/products/{id}", (IProduct productDAL, int id) =>
 {
     try
     {

@@ -11,10 +11,16 @@ namespace OrderServices.DAL
 {
     public class OrderHeaderDAL : IOrderHeader
     {
+        private readonly IConfiguration _configuration;
+        public OrderHeaderDAL(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         private string GetConnectionString()
         {
 
-            return @"Data Source=.\SQLExpress;Initial Catalog=OrderDb;Integrated Security=true;";
+            // return @"Data Source=.\SQLExpress;Initial Catalog=OrderDb;Integrated Security=true;";
+            return _configuration?.GetConnectionString("DefaultConnection") ?? "DefaultConnectionString";
         }
         public void Delete(int id)
         {
@@ -46,7 +52,7 @@ namespace OrderServices.DAL
                 SELECT o.*, c.CustomerName 
                 FROM OrderHeaders o
                 INNER JOIN Customers c ON o.CustomerId = c.CustomerId 
-                ORDER BY o.OrderHeaderId";
+                ORDER BY o.OrderDate";
                 var orderHeaders = conn.Query<OrderHeader>(strSql);
                 return orderHeaders;
             }
@@ -61,10 +67,10 @@ namespace OrderServices.DAL
                 FROM OrderHeaders AS o
                 INNER JOIN Customers AS c ON o.CustomerId = c.CustomerId 
                 WHERE OrderHeaderId = @OrderHeaderId
-                ORDER BY o.CustomerId";
+                ORDER BY o.OrderDate";
                 var param = new { OrderHeaderId = id };
                 var orderHeader = conn.QueryFirstOrDefault<OrderHeader>(strSql, param);
-                
+
                 if (orderHeader == null)
                 {
                     throw new ArgumentException("Data tidak ditemukan");
@@ -73,11 +79,11 @@ namespace OrderServices.DAL
             }
         }
 
-        public void Insert(OrderHeader obj)
+        public OrderHeader Insert(OrderHeader obj)
         {
-             using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            using (var conn = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"INSERT INTO OrderHeaders (CustomerId, OrderDate) VALUES (@CustomerId, @OrderDate)";
+                var strSql = @"INSERT INTO OrderHeaders (CustomerId, OrderDate) VALUES (@CustomerId, @OrderDate); SELECT @@IDENTITY;";
                 var param = new
                 {
                     CustomerId = obj.CustomerId,
@@ -85,7 +91,10 @@ namespace OrderServices.DAL
                 };
                 try
                 {
-                    conn.Execute(strSql, param);
+                    var id = conn.ExecuteScalar<int>(strSql, param);
+                    obj.OrderHeaderId = id;
+                    return obj;
+                    // conn.Execute(strSql, param);
                 }
                 catch (SqlException sqlEx)
                 {
@@ -100,7 +109,7 @@ namespace OrderServices.DAL
 
         public void Update(OrderHeader obj)
         {
-             using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
             {
                 var strSql = @"UPDATE OrderHeaders SET CustomerId = @CustomerId, 
                 OrderDate = @OrderDate WHERE OrderHeaderId = @OrderHeaderId";

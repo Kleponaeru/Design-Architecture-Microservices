@@ -11,10 +11,16 @@ namespace OrderServices.DAL
 {
     public class CustomerDAL : ICustomer
     {
+        // private readonly IConfiguration _configuration;
+        // public CustomerDAL(IConfiguration configuration)
+        // {
+        //     _configuration = configuration;
+        // }
         private string GetConnectionString()
         {
 
             return @"Data Source=.\SQLExpress;Initial Catalog=OrderDb;Integrated Security=true;";
+            // return _configuration.GetConnectionString("DefaultConnection");
         }
         public void Delete(int id)
         {
@@ -40,41 +46,37 @@ namespace OrderServices.DAL
 
         public IEnumerable<Customer> GetAll()
         {
-            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            using (var connection = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"SELECT * FROM Customers";
-                var product = conn.Query<Customer>(strSql);
-                return product;
+                var strSql = @"SELECT * FROM Customers order by CustomerId";
+                return connection.Query<Customer>(strSql); ;
             }
         }
 
         public Customer GetById(int id)
         {
-            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            using (var connection = new SqlConnection(GetConnectionString()))
             {
                 var strSql = @"SELECT * FROM Customers WHERE CustomerId = @CustomerId";
-                var param = new { CustomerId = id };
-                var product = conn.QueryFirstOrDefault<Customer>(strSql, param);
-                if (product == null)
-                {
-                    throw new ArgumentException("Data tidak ditemukan");
-                }
-                return product;
+                return connection.QueryFirstOrDefault<Customer>(strSql, new { CustomerId = id });
             }
         }
 
-        public void Insert(Customer obj)
+        public Customer Insert(Customer obj)
         {
-            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            using (var connection = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"INSERT INTO Customers (CustomerName) VALUES (@CustomerName)";
-                var param = new
-                {
-                    CustomerName = obj.CustomerName,
-                };
+                var strSql = @"INSERT INTO Customers (CustomerName) VALUES (@CustomerName); SELECT @@IDENTITY;";
+                // var param = new
+                // {
+                //     CustomerName = obj.CustomerName,
+                // };
                 try
                 {
-                    conn.Execute(strSql, param);
+                    var newId = connection.ExecuteScalar<int>(strSql, new { CustomerName = obj.CustomerName });
+                    obj.CustomerId = newId;
+                    return obj;
+                    // connection.Execute(strSql, param);
                 }
                 catch (SqlException sqlEx)
                 {
@@ -89,7 +91,7 @@ namespace OrderServices.DAL
 
         public void Update(Customer obj)
         {
-            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            using (var conn = new SqlConnection(GetConnectionString()))
             {
                 var strSql = @"UPDATE Customers SET CustomerName = @CustomerName WHERE CustomerId = @CustomerId";
                 var param = new
