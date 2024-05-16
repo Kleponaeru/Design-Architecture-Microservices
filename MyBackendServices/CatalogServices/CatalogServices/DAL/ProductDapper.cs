@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using CatalogServices.DAL.Interfaces;
+using CatalogServices.DTO;
 using CatalogServices.Models;
 using Dapper;
 
@@ -158,5 +159,25 @@ namespace CatalogServices.DAL.Interfaces
             }
         }
 
+        public void UpdateStockAfterOrder(ProductUpdateStockDTO productUpdateStockDTO)
+        {
+            var strSql = @"UPDATE Products SET Quantity = Quantity - @Quantity WHERE ProductID = @ProductID";
+            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            {
+                var param = new { ProductID = productUpdateStockDTO.ProductID, Quantity = productUpdateStockDTO.Quantity };
+                try
+                {
+                    conn.Execute(strSql, param);
+                }
+                catch (SqlException sqlEx)
+                {
+                    throw new ArgumentException($"Error: {sqlEx.Message} - {sqlEx.Number}");
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException($"Error: {ex.Message}");
+                }
+            }
+        }
     }
 }

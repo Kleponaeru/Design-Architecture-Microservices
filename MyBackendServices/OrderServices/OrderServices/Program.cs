@@ -1,8 +1,10 @@
+using CatalogServices.DTO;
 using OrderServices.DAL;
 using OrderServices.DAL.Interfaces;
 using OrderServices.DTO;
 using OrderServices.Models;
 using OrderServices.Services;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,8 @@ builder.Services.AddScoped<IOrderDetail, OrderDetailDAL>();
 builder.Services.AddScoped<IOrderHeader, OrderHeaderDAL>();
 
 //register product services
-builder.Services.AddHttpClient<IProductServices, ProductServices>();
+builder.Services.AddHttpClient<IProductServices, ProductServices>()
+.AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(10000)));
 
 var app = builder.Build();
 
@@ -260,6 +263,7 @@ app.MapPost("/api/orderDetails", async (IOrderDetail orderDetailDAL, IProductSer
 {
     try
     {
+        //cek apakah product ada pada service product
         var products = await productServices.GetProductById(orderDetailCreateDTO.ProductId);
         if (products == null)
         {
@@ -271,6 +275,11 @@ app.MapPost("/api/orderDetails", async (IOrderDetail orderDetailDAL, IProductSer
         }
 
         orderDetailCreateDTO.Price = products.price;
+
+        var productUpdateStockDTO = new ProductUpdateStockDTO{
+            ProductID = orderDetailCreateDTO.ProductId,
+            Quantity = orderDetailCreateDTO.Quantity,
+        };
 
         OrderDetail orderDetail = new OrderDetail
         {
@@ -290,7 +299,7 @@ app.MapPost("/api/orderDetails", async (IOrderDetail orderDetailDAL, IProductSer
             Price = orderDetailCreateDTO.Price,
             Quantity = orderDetailCreateDTO.Quantity,
         };
-
+        await productServices.UpdateProductByStock(productUpdateStockDTO);
         // Return 201 Created with the created product
         return Results.Created($"/api/orderDetails/{details.OrderDetailId}", responseObject);
     }

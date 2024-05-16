@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CatalogServices.DTO;
 using CatalogServices.Models;
 
 namespace CatalogServices.DAL.Interfaces
@@ -10,5 +11,6 @@ namespace CatalogServices.DAL.Interfaces
     {
         IEnumerable<Product> GetByCategory (string name);
         IEnumerable<Product> GetByCategoryId (int id);
+        void UpdateStockAfterOrder (ProductUpdateStockDTO productUpdateStockDTO);
     }
 }

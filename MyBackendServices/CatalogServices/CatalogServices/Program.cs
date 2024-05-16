@@ -126,6 +126,7 @@ app.MapGet("/api/products/", (IProduct productDAL) =>
         productsDto.Add(new ProductDTO
         {
             // Populate DTO properties based on Product properties
+            ProductId = product.ProductID,
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
@@ -147,6 +148,7 @@ app.MapGet("/api/products/{id}", (IProduct productDAL, int id) =>
 
         var productDTO = new ProductDTO
         {
+            ProductId = product.ProductID,
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
@@ -279,7 +281,24 @@ app.MapPut("/api/products", (IProduct productDAL, ProductUpdateDto productUpdate
     {
         return Results.BadRequest(ex.Message);
     }
+
 });
+
+//update product quantity after input
+app.MapPut("/api/products/updatestocks", (IProduct productDAL, ProductUpdateStockDTO productUpdateStockDTO) =>
+{
+    try
+    {
+        productDAL.UpdateStockAfterOrder(productUpdateStockDTO);
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+
+});
+
 
 
 

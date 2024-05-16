@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using CatalogServices.DTO;
 using OrderServices.Models;
 
 namespace OrderServices.Services
@@ -50,6 +52,18 @@ namespace OrderServices.Services
             }
 
             else
+            {
+                throw new ArgumentException($"Cannot get products - httpstatus: {response.StatusCode}");
+            }
+        }
+
+        public async Task UpdateProductByStock(ProductUpdateStockDTO productUpdateStockDTO)
+        {
+            ///api/products/updatestocks
+            var json = JsonSerializer.Serialize(productUpdateStockDTO);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync("api/products/updatestocks", data);
+            if (!response.IsSuccessStatusCode)
             {
                 throw new ArgumentException($"Cannot get products - httpstatus: {response.StatusCode}");
             }

@@ -39,3 +39,6 @@ D:\KULIAH\SEMESTER 6\MICROSERVICES\Microservices 2024\MyBackendServices\OrderSer
 D:\KULIAH\SEMESTER 6\MICROSERVICES\Microservices 2024\MyBackendServices\OrderServices\OrderServices\obj\Debug\net8.0\OrderServices.pdb
 D:\KULIAH\SEMESTER 6\MICROSERVICES\Microservices 2024\MyBackendServices\OrderServices\OrderServices\obj\Debug\net8.0\OrderServices.genruntimeconfig.cache
 D:\KULIAH\SEMESTER 6\MICROSERVICES\Microservices 2024\MyBackendServices\OrderServices\OrderServices\obj\Debug\net8.0\ref\OrderServices.dll
+D:\KULIAH\SEMESTER 6\MICROSERVICES\Microservices 2024\MyBackendServices\OrderServices\OrderServices\bin\Debug\net8.0\Microsoft.Extensions.Http.Polly.dll
+D:\KULIAH\SEMESTER 6\MICROSERVICES\Microservices 2024\MyBackendServices\OrderServices\OrderServices\bin\Debug\net8.0\Polly.dll
+D:\KULIAH\SEMESTER 6\MICROSERVICES\Microservices 2024\MyBackendServices\OrderServices\OrderServices\bin\Debug\net8.0\Polly.Extensions.Http.dll

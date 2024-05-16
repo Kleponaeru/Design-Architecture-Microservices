@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CatalogServices.Models;
 using System.Data.SqlClient;
+using CatalogServices.DTO;
 
 namespace CatalogServices.DAL.Interfaces
 {
@@ -68,6 +69,11 @@ namespace CatalogServices.DAL.Interfaces
             }
 
         public IEnumerable<Product> GetByCategoryId(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateStockAfterOrder(ProductUpdateStockDTO productUpdateStockDTO)
         {
             throw new NotImplementedException();
         }
