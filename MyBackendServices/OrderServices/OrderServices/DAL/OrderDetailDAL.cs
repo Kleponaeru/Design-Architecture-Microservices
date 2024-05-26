@@ -86,7 +86,7 @@ namespace OrderServices.DAL
         {
             using (var connection = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"INSERT INTO OrderDetails (OrderHeaderId, ProductId, Quantity, Price) VALUES (@OrderHeaderId, @ProductId, @Quantity, @Price); SELECT @@IDENTITY;";
+                var strSql = @"INSERT INTO OrderDetails (OrderHeaderId, ProductId, Quantity, Price, Username) VALUES (@OrderHeaderId, @ProductId, @Quantity, @Price, @Username); SELECT @@IDENTITY;";
                 var param = new
                 {
                     OrderDetailId = obj.OrderDetailId,
@@ -94,6 +94,7 @@ namespace OrderServices.DAL
                     ProductId = obj.ProductId,
                     Price = obj.Price,
                     Quantity = obj.Quantity,
+                    Username = obj.Username,
                 };
                 try
                 {

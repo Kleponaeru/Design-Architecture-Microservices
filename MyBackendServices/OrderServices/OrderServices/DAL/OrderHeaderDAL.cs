@@ -83,11 +83,12 @@ namespace OrderServices.DAL
         {
             using (var conn = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"INSERT INTO OrderHeaders (CustomerId, OrderDate) VALUES (@CustomerId, @OrderDate); SELECT @@IDENTITY;";
+                var strSql = @"INSERT INTO OrderHeaders (CustomerId, OrderDate, Username) VALUES (@CustomerId, @OrderDate, @Username*); SELECT @@IDENTITY;";
                 var param = new
                 {
                     CustomerId = obj.CustomerId,
                     OrderDate = obj.OrderDate,
+                    Username = obj.Username,
                 };
                 try
                 {
@@ -133,5 +134,39 @@ namespace OrderServices.DAL
                 }
             }
         }
+
+        // public async Task<OrderDetail> InsertOrderDetail(OrderDetail orderDetail)
+        // {
+        //     using (var connection = new SqlConnection(GetConnectionString()))
+        //     {
+        //         var strSql = @"INSERT INTO OrderDetails (OrderHeaderId, ProductId, Quantity, Price) 
+        //                VALUES (@OrderHeaderId, @ProductId, @Quantity, @Price);
+        //                SELECT CAST(SCOPE_IDENTITY() as int);"; // Use SCOPE_IDENTITY() to get the inserted ID
+
+        //         var param = new
+        //         {
+        //             OrderHeaderId = orderDetail.OrderHeaderId,
+        //             ProductId = orderDetail.ProductId,
+        //             Price = orderDetail.Price,
+        //             Quantity = orderDetail.Quantity,
+        //         };
+
+        //         try
+        //         {
+        //             var id = await connection.ExecuteScalarAsync<int>(strSql, param); // Execute the query asynchronously
+        //             orderDetail.OrderDetailId = id;
+        //             return orderDetail; // Return the modified orderDetail object
+        //         }
+        //         catch (SqlException sqlEx)
+        //         {
+        //             throw new ArgumentException($"Error: {sqlEx.Message} - {sqlEx.Number}");
+        //         }
+        //         catch (Exception ex)
+        //         {
+        //             throw new ArgumentException($"Error: {ex.Message}");
+        //         }
+        //     }
+        // }
+
     }
 }
