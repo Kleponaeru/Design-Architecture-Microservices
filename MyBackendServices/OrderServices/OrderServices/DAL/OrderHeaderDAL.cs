@@ -83,12 +83,11 @@ namespace OrderServices.DAL
         {
             using (var conn = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"INSERT INTO OrderHeaders (CustomerId, OrderDate, Username) VALUES (@CustomerId, @OrderDate, @Username*); SELECT @@IDENTITY;";
+                var strSql = @"INSERT INTO OrderHeaders (CustomerId, OrderDate) VALUES (@CustomerId, @OrderDate); SELECT @@IDENTITY;";
                 var param = new
                 {
                     CustomerId = obj.CustomerId,
                     OrderDate = obj.OrderDate,
-                    Username = obj.Username,
                 };
                 try
                 {

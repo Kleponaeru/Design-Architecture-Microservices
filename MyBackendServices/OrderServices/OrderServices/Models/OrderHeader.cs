@@ -11,6 +11,6 @@ namespace OrderServices.Models
         public int CustomerId { get; set; }
         public DateTime OrderDate { get; set; }
         public string? CustomerName { get; set; } = null!;
-        public string Username { get; set; } = null!;
+        // public string Username { get; set; } = null!;
     }
 }

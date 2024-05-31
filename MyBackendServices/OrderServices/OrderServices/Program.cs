@@ -161,21 +161,20 @@ app.MapPost("/api/orderHeader", async (IOrderHeader orderHeaderDAL, IWalletServi
 {
     try
     {
-        if (string.IsNullOrWhiteSpace(orderHeaderCreateDTO.Username))
-        {
-            return Results.BadRequest("Username must not be empty");
-        }
-        var wallets = await walletServices.GetSaldo(orderHeaderCreateDTO.Username);
-        if (wallets == null)
-        {
-            return Results.BadRequest("Username not exist");
-        }
+        // if (string.IsNullOrWhiteSpace(orderHeaderCreateDTO.Username))
+        // {
+        //     return Results.BadRequest("Username must not be empty");
+        // }
+        // var wallets = await walletServices.GetSaldo(orderHeaderCreateDTO.Username);
+        // if (wallets == null)
+        // {
+        //     return Results.BadRequest("Username not exist");
+        // }
 
 
         OrderHeader orderHeader = new OrderHeader
         {
             CustomerId = orderHeaderCreateDTO.CustomerId,
-            Username = orderHeaderCreateDTO.Username,
             OrderDate = orderHeaderCreateDTO.OrderDate
         };
 
@@ -186,7 +185,6 @@ app.MapPost("/api/orderHeader", async (IOrderHeader orderHeaderDAL, IWalletServi
         var responseObject = new
         {
             customerId = orderHeader.CustomerId,
-            Username = orderHeaderCreateDTO.Username,
             orderDate = orderHeader.OrderDate
         };
 
