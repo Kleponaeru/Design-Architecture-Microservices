@@ -9,8 +9,9 @@ using static WalletServices.DAL.Interfaces.ICrud;
 
 namespace WalletServices.DAL
 {
-    public interface IWallet : ICrud <Wallet>
+    public interface IWallet : ICrud<Wallet>
     {
-        void UpdateSaldoAfterOrder (WalletUpdateSaldoDTO walletUpdateSaldoDTO);
+        void UpdateSaldoAfterOrder(WalletUpdateSaldoDTO walletUpdateSaldoDTO);
+        string EncryptPassword(string password);
     }
 }

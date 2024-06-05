@@ -250,6 +250,7 @@ app.MapGet("/api/orderDetails/", (IOrderDetail orderDetailDAL) =>
             Quantity = orderDetail.Quantity,
             CustomerName = orderDetail.CustomerName,
             OrderDate = orderDetail.OrderDate,
+            Username = orderDetail.Username,
         });
     }
     return Results.Ok(orderDetailDTO);
@@ -272,6 +273,7 @@ app.MapGet("/api/orderDetails/{id}", (IOrderDetail orderDetailDAL, int id) =>
         Quantity = orderDetail.Quantity,
         CustomerName = orderDetail.CustomerName,
         OrderDate = orderDetail.OrderDate,
+        Username = orderDetail.Username,
     };
     return Results.Ok(orderHead);
 });

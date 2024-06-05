@@ -120,13 +120,13 @@ namespace WalletServices.DAL
                 var strSql = @"
             UPDATE Wallets 
             SET Saldo = Saldo + @TopUpAmount 
-            WHERE WalletId = @WalletId;
-            SELECT * FROM Wallets WHERE WalletId = @WalletId;";
+            WHERE Username = @Username;
+            SELECT * FROM Wallets WHERE Username = @Username;";
 
                 var param = new
                 {
                     TopUpAmount = obj.Saldo,
-                    WalletId = obj.WalletId
+                    Username = obj.Username,
                 };
 
                 try

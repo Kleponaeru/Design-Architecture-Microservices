@@ -14,6 +14,7 @@ namespace OrderServices.DTO
         public decimal Price { get; set; }
         public string? CustomerName { get; set; } = null!;
         public DateTime OrderDate { get; set; }
+        public string? Username { get; set; }
 
     }
 }

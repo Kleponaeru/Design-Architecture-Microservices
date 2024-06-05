@@ -130,13 +130,29 @@ app.MapPost("/api/wallet/topUp", (IWallet walletDAL, WalletTopUpDTO walletTopUpD
 {
     try
     {
-        Wallet wallet = new Wallet
+        // Retrieve the wallet from the database based on the provided username
+        Wallet wallet = walletDAL.GetByUsername(walletTopUpDTO.Username);
+        if (wallet == null)
         {
-            WalletId = walletTopUpDTO.WalletId,
-            Saldo = walletTopUpDTO.Saldo,
-        };
+            return Results.BadRequest("Wallet not found");
+        }
 
-        var updatedWallet = walletDAL.TopUp(wallet);
+        // Hash the provided password
+        string encryptedPassword = walletDAL.EncryptPassword(walletTopUpDTO.Password);
+
+        // Check if the provided password matches the password in the database
+        if (wallet.Password != encryptedPassword)
+        {
+            return Results.BadRequest("Incorrect password");
+        }
+
+        // Proceed with the top-up operation if the password is correct
+        Wallet updatedWallet = walletDAL.TopUp(new Wallet
+        {
+            Username = walletTopUpDTO.Username,
+            Password = wallet.Password, // Use the stored encrypted password
+            Saldo = walletTopUpDTO.Saldo,
+        });
 
         var responseObject = new
         {
@@ -155,6 +171,8 @@ app.MapPost("/api/wallet/topUp", (IWallet walletDAL, WalletTopUpDTO walletTopUpD
         return Results.BadRequest(ex.Message);
     }
 });
+
+
 app.MapPut("/api/wallet/updateAfterOrder", (IWallet walletDAL, WalletUpdateSaldoDTO walletUpdateSaldoDTO) =>
 {
     try
