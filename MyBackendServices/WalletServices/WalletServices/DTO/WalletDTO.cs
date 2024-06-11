@@ -12,5 +12,7 @@ namespace WalletServices.DTO
         public string Password { get; set; } = null!;
         public string FullName { get; set; } = null!;
         public decimal Saldo { get; set; }
+        public string WalletType { get; set; } = null!;
+        public int UserId { get; set; }
     }
 }

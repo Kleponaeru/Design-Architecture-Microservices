@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Polly;
 using WalletServices.DAL;
 using WalletServices.DTO;
 using WalletServices.Models;
+using WalletServices.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +14,10 @@ builder.Services.AddSwaggerGen();
 
 //regist services
 builder.Services.AddScoped<IWallet, WalletDAL>();
+
+//regist user services
+builder.Services.AddHttpClient<IUserServices, UserServices>()
+.AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(10000)));
 
 var app = builder.Build();
 
@@ -43,16 +50,23 @@ app.MapGet("/api/user/", (IWallet walletDAL) =>
             Password = wallets.Password,
             FullName = wallets.FullName,
             Saldo = wallets.Saldo,
+            WalletType = wallets.WalletType,
+            UserId = wallets.UserId,
         });
     }
     return Results.Ok(walletDTO);
 });
 
 
-app.MapPost("/api/user", (IWallet walletDAL, WalletCreateDTO walletCreateDTO) =>
+app.MapPost("/api/user", async (IWallet walletDAL, WalletCreateDTO walletCreateDTO, IUserServices userServices) =>
 {
     try
     {
+        var user = await userServices.GetById(walletCreateDTO.UserId);
+        if (user == null)
+        {
+            return Results.BadRequest("User not found");
+        }
         Wallet wallet = new Wallet
         {
 
@@ -60,6 +74,8 @@ app.MapPost("/api/user", (IWallet walletDAL, WalletCreateDTO walletCreateDTO) =>
             Password = walletCreateDTO.Password,
             FullName = walletCreateDTO.FullName,
             Saldo = walletCreateDTO.Saldo,
+            WalletType = walletCreateDTO.WalletType,
+            UserId = walletCreateDTO.UserId,
         };
 
         var insert = walletDAL.Insert(wallet);
@@ -70,10 +86,12 @@ app.MapPost("/api/user", (IWallet walletDAL, WalletCreateDTO walletCreateDTO) =>
             Password = wallet.Password,
             FullName = wallet.FullName,
             Saldo = wallet.Saldo,
+            WalletType = walletCreateDTO.WalletType,
+            UserId = walletCreateDTO.UserId,
         };
 
         // Return 201 Created with the created product
-        return Results.Created($"/api/wallet/{insert.Username}", responseObject);
+        return Results.Created($"/api/user/{insert.UserId}", responseObject);
     }
     catch (Exception ex)
     {
@@ -100,6 +118,8 @@ app.MapGet("/api/wallet/{username}", (IWallet walletDAL, string username) =>
             Password = wallets.Password,
             FullName = wallets.FullName,
             Saldo = wallets.Saldo,
+            WalletType = wallets.WalletType,
+            UserId = wallets.UserId,
         };
 
         return Results.Ok(walletData);
@@ -114,7 +134,7 @@ app.MapGet("/api/wallet/{username}", (IWallet walletDAL, string username) =>
 
 
 
-app.MapDelete("/api/user/{id}", (IWallet walletDAL, int id) =>
+app.MapDelete("/api/wallet/{id}", (IWallet walletDAL, int id) =>
 {
     try
     {

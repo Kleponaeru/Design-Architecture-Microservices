@@ -75,13 +75,15 @@ namespace WalletServices.DAL
 
             using (var connection = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"INSERT INTO Wallets (Username, Password, FullName, Saldo) VALUES (@Username, @Password, @FullName, @Saldo); SELECT @@IDENTITY;";
+                var strSql = @"INSERT INTO Wallets (Username, Password, FullName, Saldo, WalletType, UserId) VALUES (@Username, @Password, @FullName, @Saldo, @WalletType, @UserId); SELECT @@IDENTITY;";
                 var param = new
                 {
                     Username = obj.Username,
                     Password = encryptedPassword, // Use the encrypted password
                     FullName = obj.FullName,
                     Saldo = obj.Saldo,
+                    WalletType = obj.WalletType,
+                    UserId = obj.UserId,
                 };
                 try
                 {
